@@ -1,0 +1,74 @@
+version: "2.1"
+networks:
+  monitoring:
+    driver: bridge
+volumes:
+  # prometheus_data: {}
+  promtail_data: {}
+  # grafana_data: {}
+services:
+  # prometheus:
+  #   image: prom/prometheus:v2.20.1
+  #   container_name: prometheus
+  #   volumes:
+  #     - ./prometheus:/etc/prometheus
+  #     - prometheus_data:/prometheus
+  #   ports:
+  #     - 9090:9090
+  #   expose:
+  #     - 9090
+  #   networks:
+  #     - monitoring
+  promtail:
+    image: grafana/promtail:2.4.1
+    container_name: promtail
+    volumes:
+      - ./promtail:/etc/promtail
+      - promtail_data:/promtail
+    # volumes:
+    #   - /var/log:/var/log
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - monitoring
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    expose:
+      - 9100
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)' 
+    networks:
+      - monitoring
+  # grafana:
+  #   image: grafana/grafana:7.1.5
+  #   container_name: grafana
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #     - ./grafana/provisioning:/etc/grafana/provisioning
+  #   environment:
+  #     - GF_AUTH_DISABLE_LOGIN_FORM=true
+  #     - GF_AUTH_ANONYMOUS_ENABLED=true
+  #     - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+  #   ports:
+  #     - 3000:3000
+  #   expose:
+  #     - 3000
+  #   networks:
+  #     - monitoring
+  sample-server:
+    build:
+      context: sample-server
+    ports:
+      - 8080:8080
+    expose:
+      - 8080
+    networks:
+      - monitoring

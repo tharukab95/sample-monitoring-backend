@@ -1,0 +1,23 @@
+{
+  "name": "sample-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "prometheus",
+    "node.js",
+    "monitoring",
+    "grafana",
+    "metrics"
+  ],
+  "author": "Tharuka Bandara",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "prom-client": "^14.0.1"
+  }
+}
